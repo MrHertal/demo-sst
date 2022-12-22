@@ -11,8 +11,9 @@ html {
 }
 p {
   margin-top: 0;
-  font-size: 20px;
+  font-size: 48px;
 }
 button {
+  margin: 20px;
   font-size: 48px;
 }

@@ -23,7 +23,8 @@ export function MyStack({ stack }: StackContext) {
       },
     },
     routes: {
-      "POST /": "functions/lambda.main",
+      "GET /get-count": "functions/get-count.main",
+      "POST /plus-one": "functions/plus-one.main",
     },
   });
 

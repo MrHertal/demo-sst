@@ -1,11 +1,19 @@
 import { useState } from "react";
 import "./App.css";
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function App() {
   const [count, setCount] = useState(null);
 
-  function onClick() {
-    fetch(process.env.REACT_APP_API_URL, {
+  function getCount() {
+    fetch(`${url}/get-count`)
+      .then((response) => response.text())
+      .then(setCount);
+  }
+
+  function plusOne() {
+    fetch(`${url}/plus-one`, {
       method: "POST",
     })
       .then((response) => response.text())
@@ -14,8 +22,9 @@ export default function App() {
 
   return (
     <div className="App">
-      {count && <p>You clicked me {count} times.</p>}
-      <button onClick={onClick}>Click Me!</button>
+      {count && <p>{count}</p>}
+      <button onClick={getCount}>count</button>
+      <button onClick={plusOne}>+1</button>
     </div>
   );
 }
