@@ -1,6 +1,6 @@
-import { MyStack } from "./MyStack";
 import { App } from "@serverless-stack/resources";
 import { RemovalPolicy } from "aws-cdk-lib";
+import { MyStack } from "./MyStack";
 
 export default function (app: App) {
   app.setDefaultRemovalPolicy(RemovalPolicy.DESTROY);

@@ -1,5 +1,5 @@
-import { DynamoDB } from "aws-sdk";
 import { Table } from "@serverless-stack/node/table";
+import { DynamoDB } from "aws-sdk";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 

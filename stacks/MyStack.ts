@@ -1,9 +1,12 @@
 import {
   Api,
+  Queue,
   StackContext,
   StaticSite,
   Table,
 } from "@serverless-stack/resources";
+import { Duration } from "aws-cdk-lib";
+import * as sqs from "aws-cdk-lib/aws-sqs";
 
 export function MyStack({ stack }: StackContext) {
   // Create the table
@@ -14,17 +17,48 @@ export function MyStack({ stack }: StackContext) {
     primaryIndex: { partitionKey: "counter" },
   });
 
-  // Create the HTTP API
-  const api = new Api(stack, "Api", {
-    defaults: {
+  const deadLetterQueue = new sqs.Queue(stack, "DeadLetterQueue", {
+    retentionPeriod: Duration.days(14),
+  });
+
+  const queue = new Queue(stack, "Queue", {
+    consumer: {
       function: {
-        // Bind the table name to our API
+        handler: "functions/consume-add.main",
         bind: [table],
       },
     },
+    cdk: {
+      queue: {
+        deadLetterQueue: {
+          queue: deadLetterQueue,
+          maxReceiveCount: 1,
+        },
+      },
+    },
+  });
+
+  // Create the HTTP API
+  const api = new Api(stack, "Api", {
     routes: {
-      "GET /get-count": "functions/get-count.main",
-      "POST /plus-one": "functions/plus-one.main",
+      "GET /get-count": {
+        function: {
+          handler: "functions/get-count.main",
+          bind: [table],
+        },
+      },
+      "POST /plus-one": {
+        function: {
+          handler: "functions/plus-one.main",
+          bind: [table],
+        },
+      },
+      "POST /add/{number}": {
+        function: {
+          handler: "functions/queue-add.main",
+          bind: [table, queue],
+        },
+      },
     },
   });
 
